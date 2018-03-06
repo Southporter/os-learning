@@ -6,9 +6,13 @@
   mov bx, GOODBYE
   call print_ln
 
+  mov dx, 0x1fb6
+  call print_hex
+
   jmp $
 
   %include "print_ln.asm"
+  %include "print_hex.asm"
 
 HELLO_WORLD:
   db "Hello, World", 0
