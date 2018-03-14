@@ -1,43 +1,34 @@
 [org 0x7c00]
 
-  ; BIOS stores the boot drive in dl
-  mov [BOOT_DRIVE], dl
-
-  ; Set up the stack
-  mov bp, 0x8000
+  mov bp, 0x9000
   mov sp, bp
 
-  ; Set the write destination
-  mov bx, 0x9000
-  mov dh, 5  ; Read 5 sectors
-  mov dl, [BOOT_DRIVE] ; Boot drive
-  call disk_load
+  mov bx, MSG_REAL_MODE
+  call print_ln
 
-  mov dx, [0x9000]
-  call print_hex
-
-  mov dx, [0x9000 + 512]
-  call print_hex
-
-  mov dx, [0x9000 + 1024]
-  call print_hex
+  call switch_to_protected_mode
 
   jmp $
 
   ; Modular code
-  %include "./print/print_ln.asm"
-  %include "./print/print_hex.asm"
-  %include "./disk/disk_load.asm"
+  %include "./bit16/print/print_ln.asm"
+  %include "gdt.asm"
+  %include "./bit32/print/print_ln.asm"
+  %include "switch_to_protected.asm"
+
+
+[bits 32]
+
+BEGIN_PM:
+  mov ebx, MSG_PROT_MODE
+  call print_ln_32
+
+  jmp $
 
   ; Global variables
-  BOOT_DRIVE: db 0
+  MSG_REAL_MODE db "Started in real mode",0
+  MSG_PROT_MODE db "Ended in protected",0
 
 times 510-($-$$) db 0
   dw 0xaa55
 
-
-; Create some extra disk space to read from
-times 256 dw 0xdada
-times 256 dw 0xface
-times 256 dw 0xbacf
-times 1024 dw 0xfffa

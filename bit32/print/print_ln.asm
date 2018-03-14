@@ -1,7 +1,7 @@
 [bits 32]
 
 VIDEO_MEMORY equ 0xb8000
-BLACK_ON_WHITE equ 0xf0
+BLACK_ON_WHITE equ 0x0b
 
 print_ln_32:
   pusha
@@ -12,7 +12,7 @@ print_loop:
   mov ah, BLACK_ON_WHITE
 
   cmp al, 0
-  je done
+  je print_done
 
   mov [edx], ax
 
@@ -21,6 +21,6 @@ print_loop:
 
   jmp print_loop
 
-done:
+print_done:
   popa
   ret
